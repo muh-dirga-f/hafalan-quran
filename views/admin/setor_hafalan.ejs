@@ -1,0 +1,343 @@
+<% const hafalanModals=hafalans.map((hafalan)=> {
+  const { id, id_hafalan, tanggal, ayatMulai, ayatSelesai, hasilSetoran, catatan, paraf } = hafalan;
+
+  const editHTML = `
+  <div class="modal fade" id="editHafalanModal${id}" tabindex="-1" role="dialog"
+    aria-labelledby="editHafalanModalLabel${id}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editHafalanModalLabel${id}">Edit Hafalan</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Form Edit Hafalan -->
+          <form id="editForm${id}">
+            <div class="form-group">
+              <label for="editSiswa${id}">Siswa</label>
+              <select class="form-control" id="editSiswa${id}" name="siswa">
+                ${siswas.map(msiswa => `<option value="${msiswa.id}" ${msiswa.id===siswa ? 'selected' : '' }>${msiswa.username}
+                </option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="editTanggal${id}">Tanggal</label>
+              <input type="date" class="form-control" id="editTanggal${id}" name="tanggal" value="${tanggal}">
+            </div>
+            <div class="form-group">
+              <label for="editSurah${id}">Surah</label>
+              <select class="form-control" id="editSurah${id}" name="surah">
+                ${surahs.map(msurah => `<option value="${msurah.id}" ${msurah.id===surah ? 'selected' : '' }>${msurah.name}
+                </option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="editAyatMulai${id}">Ayat Mulai</label>
+              <input type="number" class="form-control" id="editAyatMulai${id}" name="ayatMulai" value="${ayatMulai}">
+            </div>
+            <div class="form-group">
+              <label for="editAyatSelesai${id}">Ayat Selesai</label>
+              <input type="number" class="form-control" id="editAyatSelesai${id}" name="ayatSelesai"
+                value="${ayatSelesai}">
+            </div>
+            <div class="form-group">
+              <label for="editHasilSetoran${id}">Hasil Setoran</label>
+              <select class="form-control" id="editHasilSetoran${id}" name="hasilSetoran">
+                <option value="kurang" ${hasilSetoran==='kurang' ? 'selected' : '' }>Kurang</option>
+                <option value="cukup" ${hasilSetoran==='cukup' ? 'selected' : '' }>Cukup</option>
+                <option value="baik" ${hasilSetoran==='baik' ? 'selected' : '' }>Baik</option>
+                <option value="baik sekali" ${hasilSetoran==='baik sekali' ? 'selected' : '' }>Baik Sekali</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="editCatatan${id}">Catatan</label>
+              <input type="text" class="form-control" id="editCatatan${id}" name="catatan" value="${catatan}">
+            </div>
+            <div class="form-group">
+              <label for="editParaf${id}">Paraf</label>
+              <input type="text" class="form-control" id="editParaf${id}" name="paraf" value="${paraf}">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+          <button type="button" class="btn btn-primary" onclick="editHafalan('${id}')">Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+
+  const deleteHTML = `
+  <div class="modal fade" id="hapusHafalanModal${id}" tabindex="-1" role="dialog"
+    aria-labelledby="hapusHafalanModalLabel${id}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="hapusHafalanModalLabel${id}">Hapus Hafalan</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Anda yakin ingin menghapus hafalan ini?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+          <button type="button" class="btn btn-danger" onclick="deleteHafalan('${id}')">Hapus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+
+  return {
+  id,
+  editHTML,
+  deleteHTML
+  };
+  });
+
+  const tableRows = hafalans.map((hafalan, index) => {
+  const surahName = surahs.find(surah => surah.id === hafalan.surah)?.name || '';
+  const siswaName = siswas.find(siswa => siswa.id === hafalan.siswa)?.username || '';
+  return `
+  <tr>
+    <td>${index + 1}</td>
+    <td>${siswaName}</td>
+    <td>${hafalan.tanggal}</td>
+    <td>${surahName}</td>
+    <td>${hafalan.ayatMulai}</td>
+    <td>${hafalan.ayatSelesai}</td>
+    <td>${hafalan.hasilSetoran}</td>
+    <td>${hafalan.catatan}</td>
+    <td>${hafalan.paraf}</td>
+    <td>
+      <!-- Tombol Edit -->
+      <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+        data-target="#editHafalanModal${hafalan.id}">Edit</button>
+      <!-- Tombol Hapus -->
+      <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+        data-target="#hapusHafalanModal${hafalan.id}">Hapus</button>
+    </td>
+  </tr>
+  `;
+  }).join('');
+
+  const layoutContent = `
+  <div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Data Hafalan</h1>
+    <div class="row">
+      <div class="col-lg-12 mb-4">
+        <div class="card shadow mb-4">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Data Hafalan</h6>
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#tambahHafalanModal">
+              <i class="fas fa-plus mr-2"></i>Tambah Hafalan
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Siswa</th>
+                    <th>Tanggal</th>
+                    <th>Surah</th>
+                    <th>Ayat Mulai</th>
+                    <th>Ayat Selesai</th>
+                    <th>Hasil Setoran</th>
+                    <th>Catatan</th>
+                    <th>Paraf</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Loop melalui data hafalans -->
+                  ${tableRows}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tambah Hafalan -->
+  <div class="modal fade" id="tambahHafalanModal" tabindex="-1" role="dialog" aria-labelledby="tambahHafalanModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tambahHafalanModalLabel">Tambah Hafalan</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Form Tambah Hafalan -->
+          <form id="tambahForm">
+            <div class="form-group">
+              <label for="tambahSiswa">Siswa</label>
+              <select class="form-control" id="tambahSiswa" name="siswa">
+                ${siswas.map(siswa => `<option value="${siswa.id}">${siswa.username}
+                </option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="tambahTanggal">Tanggal</label>
+              <input type="date" class="form-control" id="tambahTanggal">
+            </div>
+            <div class="form-group">
+              <label for="tambahSurah">Surah</label>
+              <select class="form-control" id="tambahSurah">
+                ${surahs.map((surah) => `<option value="${surah.id}">${surah.name}</option>`).join("")}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="tambahAyatMulai">Ayat Mulai</label>
+              <input type="number" class="form-control" id="tambahAyatMulai">
+            </div>
+            <div class="form-group">
+              <label for="tambahAyatSelesai">Ayat Selesai</label>
+              <input type="number" class="form-control" id="tambahAyatSelesai">
+            </div>
+            <div class="form-group">
+              <label for="tambahHasilSetoran">Hasil Setoran</label>
+              <select class="form-control" id="tambahHasilSetoran" name="hasilSetoran">
+                  <option value="kurang">Kurang</option>
+                  <option value="cukup">Cukup</option>
+                  <option value="baik">Baik</option>
+                  <option value="baik sekali">Baik Sekali</option>
+                </select>
+            </div>
+            <div class="form-group">
+              <label for="tambahCatatan">Catatan</label>
+              <input type="text" class="form-control" id="tambahCatatan">
+            </div>
+            <div class="form-group">
+              <label for="tambahParaf">Paraf</label>
+              <input type="text" class="form-control" id="tambahParaf">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+          <button type="button" class="btn btn-primary" onclick="addHafalan()">Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Edit dan Hapus Hafalan -->
+  ${hafalanModals.map((hafalan) => hafalan.editHTML + hafalan.deleteHTML).join('')}
+  `;
+
+  %>
+
+  <%- include('components/layout', { title: 'Hafalan' , content: layoutContent }) %>
+
+    <script>
+      // Function to add a new hafalan
+      function addHafalan() {
+        const siswa = document.getElementById('tambahSiswa').value;
+        const tanggal = document.getElementById('tambahTanggal').value;
+        const surah = document.getElementById('tambahSurah').value;
+        const ayatMulai = document.getElementById('tambahAyatMulai').value;
+        const ayatSelesai = document.getElementById('tambahAyatSelesai').value;
+        const hasilSetoran = document.getElementById('tambahHasilSetoran').value;
+        const catatan = document.getElementById('tambahCatatan').value;
+        const paraf = document.getElementById('tambahParaf').value;
+
+        // Send a request to the server to add the new hafalan
+        fetch('/admin/hafalan/tambah', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            siswa,
+            tanggal,
+            surah,
+            ayatMulai,
+            ayatSelesai,
+            hasilSetoran,
+            catatan,
+            paraf
+          })
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              // Refresh the page after successfully adding the hafalan
+              location.reload();
+            }
+          })
+          .catch((error) => console.error('Error:', error));
+      }
+
+      // Function to edit a hafalan
+      function editHafalan(id) {
+        const siswa = document.getElementById(`editSiswa${id}`).value;
+        const tanggal = document.getElementById(`editTanggal${id}`).value;
+        const surah = document.getElementById(`editSurah${id}`).value;
+        const ayatMulai = document.getElementById(`editAyatMulai${id}`).value;
+        const ayatSelesai = document.getElementById(`editAyatSelesai${id}`).value;
+        const hasilSetoran = document.getElementById(`editHasilSetoran${id}`).value;
+        const catatan = document.getElementById(`editCatatan${id}`).value;
+        const paraf = document.getElementById(`editParaf${id}`).value;
+
+        // Send a request to the server to edit the hafalan
+        fetch(`/admin/hafalan/edit`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            id,
+            siswa,
+            tanggal,
+            surah,
+            ayatMulai,
+            ayatSelesai,
+            hasilSetoran,
+            catatan,
+            paraf
+          })
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              // Refresh the page after successfully editing the hafalan
+              location.reload();
+            }
+          })
+          .catch((error) => console.error('Error:', error));
+      }
+
+      // Function to delete a hafalan
+      function deleteHafalan(id) {
+        // Send a request to the server to delete the hafalan
+        fetch(`/admin/hafalan/hapus`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            id: id
+          })
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              // Refresh the page after successfully deleting the hafalan
+              location.reload();
+            }
+          })
+          .catch((error) => console.error('Error:', error));
+      }
+    </script>

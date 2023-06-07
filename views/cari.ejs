@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Cari</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="/sb-admin-2/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="/sb-admin-2/css/sb-admin-2.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-gradient-primary">
+
+  <div class="container">
+
+    <!-- Outer Row -->
+    <div class="row justify-content-center">
+
+      <div class="col-xl-5 col-lg-6 col-md-9">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+          <div class="card-body p-0">
+            <!-- Nested Row within Card Body -->
+            <div class="row">
+              <!-- <div class="col-lg-6 d-none d-lg-block bg-login-image"></div> -->
+              <div class="col-lg-12">
+                <div class="p-5">
+                  <div class="text-center">
+                    <h1 class="h4 text-gray-900 mb-4">Data Siswa</h1>
+                  </div>
+                  <form class="user" action="/cari" method="POST">
+                    <div class="form-group">
+                      <input type="text" name="username" class="form-control form-control-user" id="exampleInputUser"
+                        aria-describedby="userHelp" placeholder="Enter Username ...">
+                    </div>
+                    <hr>
+                    <button type="submit" class="btn btn-primary btn-user btn-block" id="cari">
+                      Cari
+                    </button>
+                  </form>
+                  <hr>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="/sb-admin-2/vendor/jquery/jquery.min.js"></script>
+  <script src="/sb-admin-2/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="/sb-admin-2/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="/sb-admin-2/js/sb-admin-2.min.js"></script>
+  <!-- <script>
+    $("#cari").on("click", function (e) {
+      e.preventDefault();
+      let username = $("#exampleInputUser").val();
+      $.ajax({
+        type: "POST",
+        url: "cari",
+        data: { username },
+        dataType: "JSON",
+        success: function (response) {
+          console.log(JSON.stringify(response));
+        }
+      });
+    });
+  </script> -->
+  <script>
+    $(document).ready(function () {
+      $("#cari").on("click", function (e) {
+        e.preventDefault();
+        let username = $("#exampleInputUser").val();
+        $.ajax({
+          type: "POST",
+          url: "cari",
+          data: { username },
+          dataType: "JSON",
+          success: function (response) {
+            if (response.dataUser.length > 0 && response.dataHafalan.length > 0) {
+              // Menampilkan modal dengan data yang ditemukan
+              $("#resultModal").modal("show");
+
+              // Menampilkan data dalam modal
+              let dataUser = response.dataUser[0];
+              let dataHafalan = response.dataHafalan;
+
+              // Tampilkan dataUser di dalam modal
+              $("#usernameModal").text(dataUser.username);
+              $("#emailModal").text(dataUser.email);
+              $("#levelModal").text(dataUser.level);
+
+              // Tampilkan dataHafalan di dalam modal
+              let hafalanHTML = "";
+              if (dataHafalan.length > 0) {
+                dataHafalan.forEach((hafalan) => {
+                  hafalanHTML += '<div class="accordion shadow" id="hafalanAccordion">';
+                  hafalanHTML += '<div class="card">';
+                  hafalanHTML += '<div class="card-header" id="hafalanHeading' + hafalan.id + '">';
+                  hafalanHTML += '<h2 class="mb-0">';
+                  hafalanHTML += '<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#hafalanCollapse' + hafalan.id + '" aria-expanded="true" aria-controls="hafalanCollapse' + hafalan.id + '">';
+                  hafalanHTML += 'Surah: ' + hafalan.surah.name + ' - Pengajar: ' + hafalan.pengajar.username;
+                  hafalanHTML += '</button>';
+                  hafalanHTML += '</h2>';
+                  hafalanHTML += '</div>';
+                  hafalanHTML += '<div id="hafalanCollapse' + hafalan.id + '" class="collapse" aria-labelledby="hafalanHeading' + hafalan.id + '" data-parent="#hafalanAccordion">';
+                  hafalanHTML += '<div class="card-body">';
+                  hafalanHTML += '<ul>';
+                  if (hafalan.setorHafalan.length > 0) {
+                    hafalan.setorHafalan.forEach((setorHafalan) => {
+                      hafalanHTML += '<li>Tanggal: ' + setorHafalan.tanggal + '</li>';
+                      hafalanHTML += '<li>Ayat Mulai: ' + setorHafalan.ayatMulai + '</li>';
+                      hafalanHTML += '<li>Ayat Selesai: ' + setorHafalan.ayatSelesai + '</li>';
+                      hafalanHTML += '<li>Hasil Setoran: ' + setorHafalan.hasilSetoran + '</li>';
+                      hafalanHTML += '<li>Catatan: ' + setorHafalan.catatan + '</li>';
+                      hafalanHTML += '<li>Diperiksa: ' + ((setorHafalan.paraf === "true") ? "sudah" : "belum") + '</li>';
+                      hafalanHTML += '<br>';
+                    });
+                  } else {
+                    hafalanHTML += 'Data masih kosong!';
+                  }
+                  hafalanHTML += '</ul>';
+                  hafalanHTML += '</div>';
+                  hafalanHTML += '</div>';
+                  hafalanHTML += '</div>';
+                  hafalanHTML += '</div>';
+                });
+              }
+
+              $("#hafalanModal").html(hafalanHTML);
+            } else {
+              // Menampilkan notifikasi data tidak ditemukan
+              $("#notFoundModal").modal("show");
+            }
+          }
+        });
+      });
+    });
+  </script>
+</body>
+
+<!-- Modal Notifikasi Data Tidak Ditemukan -->
+<div class="modal fade" id="notFoundModal" tabindex="-1" role="dialog" aria-labelledby="notFoundModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="notFoundModalLabel">Data Not Found</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Data tidak ditemukan. Silakan coba lagi dengan username yang valid.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Hasil Pencarian -->
+<div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="resultModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="resultModalLabel">Hasil Pencarian</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body bg-light">
+        <h4>Data User:</h4>
+        <div class="card card-body shadow mb-4">
+          <p>Username: <span id="usernameModal"></span></p>
+          <p>Email: <span id="emailModal"></span></p>
+          <p>Level: <span id="levelModal"></span></p>
+        </div>
+
+        <h4>Data Hafalan:</h4>
+        <div id="hafalanModal"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</html>

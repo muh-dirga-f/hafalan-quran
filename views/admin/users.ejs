@@ -1,0 +1,272 @@
+<% const userModals = users.map((user) => {
+  const { id, username, email, password, level } = user;
+
+  const editHTML = `
+    <div class="modal fade" id="editUserModal${id}" tabindex="-1" role="dialog"
+      aria-labelledby="editUserModalLabel${id}" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editUserModalLabel${id}">Edit User</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- Form Edit User -->
+            <form id="editForm${id}">
+              <div class="form-group">
+                <label for="editUsername${id}">Username</label>
+                <input type="text" class="form-control" id="editUsername${id}" value="${username}">
+              </div>
+              <div class="form-group">
+                <label for="editEmail${id}">Email</label>
+                <input type="email" class="form-control" id="editEmail${id}" value="${email}">
+              </div>
+              <div class="form-group">
+                <label for="editPassword${id}">Password</label>
+                <input type="password" class="form-control" id="editPassword${id}" value="${password}">
+              </div>
+              <div class="form-group">
+                <label for="editLevel${id}">Level</label>
+                <select class="form-control" id="editLevel${id}">
+                  <option value="admin" ${level==='admin' ? 'selected' : '' }>Admin</option>
+                  <option value="pengajar" ${level==='pengajar' ? 'selected' : '' }>Pengajar</option>
+                  <option value="siswa" ${level==='siswa' ? 'selected' : '' }>Siswa</option>
+                  <option value="wali" ${level==='wali' ? 'selected' : '' }>Wali</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            <button type="button" class="btn btn-primary" onclick="editUser('${id}')">Simpan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const deleteHTML = `
+    <div class="modal fade" id="hapusUserModal${id}" tabindex="-1" role="dialog"
+      aria-labelledby="hapusUserModalLabel${id}" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="hapusUserModalLabel${id}">Hapus User</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Anda yakin ingin menghapus user ${username}?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+            <button type="button" class="btn btn-danger" onclick="deleteUser('${id}')">Hapus</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  return {
+    id,
+    editHTML,
+    deleteHTML
+  };
+});
+
+const tableRows = users.map((user, index) => `
+  <tr>
+    <td>${index + 1}</td>
+    <td>${user.username}</td>
+    <td>${user.email}</td>
+    <td>${user.password}</td>
+    <td>${user.level}</td>
+    <td>
+      <!-- Tombol Edit -->
+      <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+        data-target="#editUserModal${user.id}">Edit</button>
+      <!-- Tombol Hapus -->
+      <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+        data-target="#hapusUserModal${user.id}">Hapus</button>
+    </td>
+  </tr>
+`).join('');
+
+const layoutContent = `
+  <div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Data Users</h1>
+    <div class="row">
+      <div class="col-lg-12 mb-4">
+        <div class="card shadow mb-4">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Data User</h6>
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#tambahUserModal">
+              <i class="fas fa-plus mr-2"></i>Tambah User
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Password</th>
+                    <th>Level</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Loop melalui data users -->
+                  ${tableRows}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tambah User -->
+  <div class="modal fade" id="tambahUserModal" tabindex="-1" role="dialog" aria-labelledby="tambahUserModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tambahUserModalLabel">Tambah User</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Form Tambah User -->
+          <form id="tambahForm">
+            <div class="form-group">
+              <label for="tambahUsername">Username</label>
+              <input type="text" class="form-control" id="tambahUsername">
+            </div>
+            <div class="form-group">
+              <label for="tambahEmail">Email</label>
+              <input type="email" class="form-control" id="tambahEmail">
+            </div>
+            <div class="form-group">
+              <label for="tambahPassword">Password</label>
+              <input type="password" class="form-control" id="tambahPassword">
+            </div>
+            <div class="form-group">
+              <label for="tambahLevel">Level</label>
+              <select class="form-control" id="tambahLevel">
+                <option value="admin">Admin</option>
+                <option value="pengajar">Pengajar</option>
+                <option value="siswa">Siswa</option>
+                <option value="wali">Wali</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+          <button type="button" class="btn btn-primary" onclick="addUser()">Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Edit dan Hapus User -->
+  ${userModals.map((user) => user.editHTML + user.deleteHTML).join('')}
+`;
+
+%>
+
+<%- include('components/layout', { title: 'Users' , content: layoutContent }) %>
+
+    <script>
+      // Function to add a new user
+      function addUser() {
+        const username = document.getElementById('tambahUsername').value;
+        const email = document.getElementById('tambahEmail').value;
+        const password = document.getElementById('tambahPassword').value;
+        const level = document.getElementById('tambahLevel').value;
+
+        // Send a request to the server to add the new user
+        fetch('/admin/users/tambah', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: username,
+            email: email,
+            password: password,
+            level: level
+          })
+        })
+          .then(response => response.json())
+          .then(data => {
+            // Reload the page to show the updated user list
+            location.reload();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+
+      // Function to edit an existing user
+      function editUser(id) {
+        const username = document.getElementById('editUsername' + id).value;
+        const email = document.getElementById('editEmail' + id).value;
+        const password = document.getElementById('editPassword' + id).value;
+        const level = document.getElementById('editLevel' + id).value;
+
+        // Send a request to the server to update the user with the specified id
+        fetch('/admin/users/edit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            id: id,
+            username: username,
+            email: email,
+            password: password,
+            level: level
+          })
+        })
+          .then(response => response.json())
+          .then(data => {
+            // Reload the page to show the updated user list
+            location.reload();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+
+      // Function to delete a user
+      function deleteUser(id) {
+        // Send a request to the server to delete the user with the specified id
+        fetch('/admin/users/hapus', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            id: id
+          })
+        })
+          .then(response => response.json())
+          .then(data => {
+            // Reload the page to show the updated user list
+            location.reload();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+
+    </script>

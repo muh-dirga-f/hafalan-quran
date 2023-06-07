@@ -1,0 +1,92 @@
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+  <!-- Sidebar - Brand -->
+  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+    <div class="sidebar-brand-icon rotate-n-15">
+      <i class="fas fa-laugh-wink"></i>
+    </div>
+    <div class="sidebar-brand-text mx-3">Admin</div>
+  </a>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider my-0">
+
+  <!-- Nav Item - Dashboard -->
+  <li class="nav-item">
+    <a class="nav-link" href="/admin">
+      <i class="fas fa-fw fa-tachometer-alt"></i>
+      <span>Dashboard</span></a>
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider">
+
+  <!-- Heading -->
+  <div class="sidebar-heading">
+    Data Master
+  </div>
+
+  <!-- Nav Item - Users -->
+  <li class="nav-item">
+    <a class="nav-link" href="/admin/users">
+      <i class="fas fa-fw fa-users"></i>
+      <span>Users</span></a>
+  </li>
+
+  <!-- Nav Item - Surah -->
+  <li class="nav-item">
+    <a class="nav-link" href="/admin/surah">
+      <i class="fas fa-fw fa-quran"></i>
+      <span>Surah</span></a>
+  </li>
+
+  <!-- Nav Item - Hafalan -->
+  <li class="nav-item">
+    <a class="nav-link" href="/admin/hafalan">
+      <i class="fas fa-fw fa-praying-hands"></i>
+      <span>Hafalan</span></a>
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider d-none d-md-block">
+
+  <!-- Sidebar Toggler (Sidebar) -->
+  <div class="text-center d-none d-md-inline">
+    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+  </div>
+
+</ul>
+<script>
+  // ambil URL dari halaman saat ini
+  var currentUrl = window.location.href;
+
+  // temukan semua menu item di navbar
+  var menuItems = document.querySelectorAll('#accordionSidebar .nav-item');
+
+  // hapus kelas "active" dari setiap menu item
+  menuItems.forEach(function(menuItem) {
+    menuItem.classList.remove('active');
+  });
+
+  // loop melalui setiap menu item dan cek apakah end link-nya cocok dengan end link dari URL saat ini
+  menuItems.forEach(function(menuItem) {
+    var menuItemLink = menuItem.querySelector('a.nav-link');
+    if (menuItemLink) {
+      // pecah menuItemLink menjadi beberapa bagian berdasarkan tanda "/"
+      var menuItemLinkParts = menuItemLink.getAttribute('href').split('/');
+
+      // ambil bagian terakhir dari URL sebagai "end link" untuk menuItemLink
+      var menuItemEndLink = menuItemLinkParts[menuItemLinkParts.length - 1];
+
+      // ambil bagian terakhir dari URL saat ini sebagai "end link" untuk currentUrl
+      var urlParts = currentUrl.split('/');
+      var endLink = urlParts[urlParts.length - 1];
+
+      // periksa apakah end link dari menu item sama dengan end link dari URL saat ini
+      if (endLink === menuItemEndLink) {
+        // tambahkan kelas "active" pada menu item yang cocok
+        menuItem.classList.add('active');
+      }
+    }
+  });
+</script>

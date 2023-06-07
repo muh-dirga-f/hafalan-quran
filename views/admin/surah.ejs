@@ -1,0 +1,234 @@
+<% const surahModals = surahs.map((surah) => {
+  const { id, name, verseCount } = surah;
+
+  const editHTML = `
+    <div class="modal fade" id="editSurahModal${id}" tabindex="-1" role="dialog"
+      aria-labelledby="editSurahModalLabel${id}" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editSurahModalLabel${id}">Edit Surah</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- Form Edit Surah -->
+            <form id="editForm${id}">
+              <div class="form-group">
+                <label for="editName${id}">Nama Surah</label>
+                <input type="text" class="form-control" id="editName${id}" value="${name}">
+              </div>
+              <div class="form-group">
+                <label for="editVerseCount${id}">Jumlah Ayat</label>
+                <input type="number" class="form-control" id="editVerseCount${id}" value="${verseCount}">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            <button type="button" class="btn btn-primary" onclick="editSurah('${id}')">Simpan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const deleteHTML = `
+    <div class="modal fade" id="hapusSurahModal${id}" tabindex="-1" role="dialog"
+      aria-labelledby="hapusSurahModalLabel${id}" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="hapusSurahModalLabel${id}">Hapus Surah</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Anda yakin ingin menghapus surah ${name}?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+            <button type="button" class="btn btn-danger" onclick="deleteSurah('${id}')">Hapus</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  return {
+    id,
+    editHTML,
+    deleteHTML
+  };
+});
+
+const tableRows = surahs.map((surah, index) => `
+  <tr>
+    <td>${index + 1}</td>
+    <td>${surah.name}</td>
+    <td>${surah.verseCount}</td>
+    <td>
+      <!-- Tombol Edit -->
+      <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+        data-target="#editSurahModal${surah.id}">Edit</button>
+      <!-- Tombol Hapus -->
+      <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+        data-target="#hapusSurahModal${surah.id}">Hapus</button>
+    </td>
+  </tr>
+`).join('');
+
+const layoutContent = `
+  <div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Data Surah</h1>
+    <div class="row">
+      <div class="col-lg-12 mb-4">
+        <div class="card shadow mb-4">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Data Surah</h6>
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#tambahSurahModal">
+              <i class="fas fa-plus mr-2"></i>Tambah Surah
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nama Surah</th>
+                    <th>Jumlah Ayat</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Loop melalui data surahs -->
+                  ${tableRows}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tambah Surah -->
+  <div class="modal fade" id="tambahSurahModal" tabindex="-1" role="dialog" aria-labelledby="tambahSurahModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tambahSurahModalLabel">Tambah Surah</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Form Tambah Surah -->
+          <form id="tambahForm">
+            <div class="form-group">
+              <label for="tambahName">Nama Surah</label>
+              <input type="text" class="form-control" id="tambahName">
+            </div>
+            <div class="form-group">
+              <label for="tambahVerseCount">Jumlah Ayat</label>
+              <input type="number" class="form-control" id="tambahVerseCount">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+          <button type="button" class="btn btn-primary" onclick="addSurah()">Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Edit dan Hapus Surah -->
+  ${surahModals.map((surah) => surah.editHTML + surah.deleteHTML).join('')}
+`;
+
+%>
+
+<%- include('components/layout', { title: 'Surah' , content: layoutContent }) %>
+
+<script>
+  // Function to add a new surah
+  function addSurah() {
+    const name = document.getElementById('tambahName').value;
+    const verseCount = document.getElementById('tambahVerseCount').value;
+
+    // Send a request to the server to add the new surah
+    fetch('/admin/surah/tambah', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: name,
+        verseCount: verseCount
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Reload the page to show the updated surah list
+        location.reload();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+
+  // Function to edit an existing surah
+  function editSurah(id) {
+    const name = document.getElementById('editName' + id).value;
+    const verseCount = document.getElementById('editVerseCount' + id).value;
+
+    // Send a request to the server to update the surah with the specified id
+    fetch('/admin/surah/edit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: id,
+        name: name,
+        verseCount: verseCount
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Reload the page to show the updated surah list
+        location.reload();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+
+  // Function to delete a surah
+  function deleteSurah(id) {
+    // Send a request to the server to delete the surah with the specified id
+    fetch('/admin/surah/hapus', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: id
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Reload the page to show the updated surah list
+        location.reload();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+
+</script>
